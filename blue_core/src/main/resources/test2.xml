@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <beans>
+        <!--导入db.properties连接数据库的数据-->
+        <property-placeholder location="classpath:db.properties"/>
+        <!-- DataSource:使用Spring的数据源替换Mybatis的配置
+                我们这里使用DruidDataSource
+            -->
+        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+            <property name="driverClassName" value="${jdbc.driver}"/>
+            <property name="url" value="${jdbc.url}"/>
+            <property name="username" value="${jdbc.username}"/>
+            <property name="password" value="${jdbc.password}"/>
+        </bean>
+
+        <!--得到sqlSessionFactory-->
+        <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            <!--绑定mybatis配置文件-->
+            <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        </bean>
+
+        <!--配置dao接口扫描包，动态的实现了Dao接口可以注入到Spring容器中-->
+        <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <!-- 注入SqlSessionFactory -->
+            <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+            <!-- 要扫描的包 -->
+            <property name="basePackage" value="com.Jason.dao"/>
+        </bean>
+    </beans>
+    <beans>
+        <!--扫描service下的包-->
+        <component-scan base-package="com.Jason.service"/>
+
+        <!--声明事务配置-->
+        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+            <!--注入数据源-->
+            <property name="dataSource" ref="dataSource"/>
+        </bean>
+
+        <!-- 开启事务注解驱动 -->
+        <annotation-driven transaction-manager="transactionManager"/>
+    </beans>
+    <beans>
+        <!-- 编写DispatcherServlet的配置文件 -->
+
+        <!--注解驱动-->
+        <annotation-driven/>
+
+        <!--静态资源过滤-->
+        <default-servlet-handler/>
+        <!--开启扫描注解-->
+        <component-scan base-package="com.Jason.controller"/>
+
+        <!-- 注册url处理器和url适配器，解析用户请求 -->
+        <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+        <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+        <!-- 视图解析器：DispatcherServlet 给他的 ModelAndView -->
+        <!-- 模板引擎：Thymeleaf ，Freemarker -->
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">
+            <!-- 拿到DispatcherServlet给到的 ModelAndView 后，加上前缀后缀 -->
+            <!-- 例如 hello 改成 /WEB-INF/jsp/hello.jsp -->
+            <!-- 前缀 -->
+            <property name="prefix" value="/"/>
+            <!-- 后缀 -->
+            <property name="suffix" value=".jsp"/>
+        </bean>
+    </beans>
+</beans>

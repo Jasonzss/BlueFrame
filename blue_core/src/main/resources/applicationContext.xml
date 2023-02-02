@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/spring?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <annotation-driven transaction-manager="transactionManager"/>
+
+    <advice id="advice">
+        <attributes>
+            <method name="accountMoney" propagation="REQUIRED"/>
+        </attributes>
+    </advice>
+
+    <config>
+        <pointcut id="pt" expression="execution(* com.jdbcTemplate.service.AccountService.*(..))"/>
+        <advisor advice-ref="advice" pointcut-ref="pt"/>
+    </config>
+
+    <component-scan base-package="com.Jason"/>
+    <component-scan base-package="com.aop"/>
+    <component-scan base-package="com.jdbcTemplate"/>
+    <component-scan base-package="com.Spring"/>
+
+    <component-scan base-package="com.Jason" use-default-filters="false">
+        <include-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+    </component-scan>
+    <component-scan base-package="com.Jason">
+        <exclude-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller"/>
+    </component-scan>
+
+    <aspectj-autoproxy/>
+
+
+    <bean id="helloSpring" class="com.Jason.test.HelloSpring"/>
+
+    <bean id="user" class="com.Jason.pojo.User">
+        <property name="age" value="18"/>
+        <property name="name" value="张三"/>
+    </bean>
+    
+    <bean id="book" class="com.Jason.pojo.Book">
+        <constructor-arg name="bookName" value="我是书名"/>
+        <constructor-arg name="price" value="20"/>
+    </bean>
+
+    <bean id="userDaoImpl" class="com.Jason.dao.UserDaoImpl"/>
+    <bean id="userService" class="com.Jason.service.UserService">
+        <property name="userDao" ref="userDaoImpl"/>
+    </bean>
+
+<!--    <bean id="emp1" class="com.Jason.pojo.Emp">-->
+<!--        <property name="eName" value="张三"/>-->
+<!--        <property name="gender" value="男"/>-->
+<!--        <property name="dept">-->
+<!--            <bean class="com.Jason.pojo.Dept">-->
+<!--                <property name="dName" value="部门"/>-->
+<!--            </bean>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+<!--    <bean id="emp" class="com.Jason.pojo.Emp">-->
+<!--        <property name="eName" value="张三"/>-->
+<!--        <property name="gender" value="男"/>-->
+<!--        <property name="dept" ref="dept"/>-->
+<!--    </bean>-->
+<!--    <bean id="dept" class="com.Jason.pojo.Dept">-->
+<!--        <property name="dName" value="财务部"/>-->
+<!--    </bean>-->
+
+    <bean id="emp" class="com.Jason.pojo.Emp">
+        <property name="eName" value="张三"/>
+        <property name="gender" value="男"/>
+        <property name="dept" ref="dept"/>
+        <property name="dept.dName" value="技术部"/>
+    </bean>
+    <bean id="dept" class="com.Jason.pojo.Dept"/>
+
+    <bean id="stu" class="com.Jason.pojo.Stu">
+        <property name="courses">
+            <array>
+                <value>数学</value>
+                <value>英语</value>
+                <value>语文</value>
+            </array>
+        </property>
+        <property name="list">
+            <list>
+                <value>list01</value>
+                <value>list02</value>
+                <value>list03</value>
+            </list>
+        </property>
+        <property name="maps">
+            <map>
+                <entry key="JAVA" value="java"/>
+                <entry key="PHP" value="php"/>
+            </map>
+        </property>
+        <property name="sets">
+            <set>
+                <value>我草</value>
+                <value>woc</value>
+            </set>
+        </property>
+        <property name="courseList">
+            <list>
+                <ref bean="course1"/>
+                <ref bean="course2"/>
+                <ref bean="course3"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="course1" class="com.Jason.pojo.Course">
+        <property name="cname" value="课程一"/>
+    </bean>
+    <bean id="course2" class="com.Jason.pojo.Course">
+        <property name="cname" value="课程二"/>
+    </bean>
+    <bean id="course3" class="com.Jason.pojo.Course">
+        <property name="cname" value="课程三"/>
+    </bean>
+
+    <list id="cities">
+        <value>北京</value>
+        <value>上海</value>
+        <value>广州</value>
+        <value>深圳</value>
+    </list>
+
+    <bean id="city" class="com.Jason.pojo.City" scope="prototype">
+        <property name="cities" ref="cities"/>
+    </bean>
+
+    <bean id="myBean" class="com.Jason.pojo.MyBean"/>
+
+
+</beans>

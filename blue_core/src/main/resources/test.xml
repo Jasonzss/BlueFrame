@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans id="nameBeans">
+<!--    <bean id="xmlTest1" class="com.blue_core.test.TestEntity1" init-method="myInit" destroy-method="myDestroy">-->
+<!--        <property name="a" value="25"/>-->
+<!--        <property name="b" value="12"/>-->
+<!--    </bean>-->
+<!--    <bean id="xmlTest1" class="com.blue_core.test.TestEntity1">-->
+<!--        <constructor-arg name="a" value = "30"/>-->
+<!--        <constructor-arg name="b" value = "80"/>-->
+<!--    </bean>-->
+    <bean id="xmlTest2" class="com.blue_core.test.TestEntity2" scope="prototype">
+<!--        <property name="testEntity1" ref="test"/>-->
+    </bean>
+
+    <bean id="Test1_1" class="com.blue_core.test.test01.Test1_1">
+        <property name="testStr" value="${name}"/>
+    </bean>
+
+    <component-scan base-package="com.blue_core.test"/>
+
+    <bean id="MyBeanPostProcessor" class="com.blue_core.beans.factory.config.MyBeanPostProcessor"/>
+<!--    <bean id="MyBeanFactoryPostProcessor" class="com.blue_core.beans.factory.config.MyBeanFactoryPostProcessor"/>-->
+    <bean id="MyAware" class="com.blue_core.beans.factory.MyAware"/>
+    <bean id="MyFactoryBean" class="com.blue_core.beans.factory.support.MyFactoryBean"/>
+    <bean id="MyRefreshedEventListener" class="com.blue_core.context.MyRefreshedEventListener"/>
+    <bean id="MyCloseEventListener" class="com.blue_core.context.MyCloseEventListener"/>
+    <bean id="MyEventListener" class="com.blue_core.context.MyEventListener">
+        <property name="name" value="我的监听器"/>
+    </bean>
+
+    <!-- *************************AOP**************************-->
+
+<!--    <bean id="DefaultAdvisorAutoProxyCreator" class="com.blue_core.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
+
+    <bean id="AspectJExpressionPointCutAdvisor" class="com.blue_core.aop.aspectj.AspectJExpressionPointCutAdvisor">
+        <property name="advice" ref="MethodBeforeAdviceInterceptor"/>
+        <property name="expression" value="execution(* com.blue_core.test.test01.TestImplement.*(..))"/>
+    </bean>
+
+    <bean id="MethodBeforeAdviceInterceptor" class="com.blue_core.aop.framework.adapter.MethodBeforeAdviceInterceptor">
+        <property name="advice" ref="MyBeforeAdvice"/>
+    </bean>
+    <bean id="MyBeforeAdvice" class="com.blue_core.aop.bean.MyBeforeAdvice"/>
+
+    <!-- 读取properties的资源 -->
+    <bean id="PropertyPlaceholderConfigurer" class="com.blue_core.beans.factory.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:test.properties"/>
+    </bean>
+</beans>

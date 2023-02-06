@@ -1,9 +1,9 @@
 package com.blue_core.context.annotation;
 
 import cn.hutool.core.util.ClassUtil;
-import com.blue_core.beans.annotation.Component;
 import com.blue_core.beans.factory.config.BeanDefinition;
 import com.blue_core.beans.factory.config.GenericBeanDefinition;
+import com.blue_core.stereotype.Component;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

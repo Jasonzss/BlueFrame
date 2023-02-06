@@ -39,6 +39,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         // 1. 处理注解 @Value
+        // TODO @Value注解的功能还有好多，这里先实现一个简单的属性注入。同理Autowired注解也是
         Class<?> clazz = bean.getClass();
         clazz = ClassUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
 

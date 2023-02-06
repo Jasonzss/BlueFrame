@@ -1,6 +1,7 @@
 package com.blue_core.test.test01;
 
-import com.blue_core.beans.annotation.Component;
+
+import com.blue_core.stereotype.Component;
 
 /**
  * @Author Jason

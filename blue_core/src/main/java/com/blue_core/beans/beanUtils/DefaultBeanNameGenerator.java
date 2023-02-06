@@ -1,7 +1,7 @@
 package com.blue_core.beans.beanUtils;
 
-import com.blue_core.beans.annotation.Component;
 import com.blue_core.beans.factory.config.BeanDefinition;
+import com.blue_core.stereotype.Component;
 
 /**
  * @Author Jason

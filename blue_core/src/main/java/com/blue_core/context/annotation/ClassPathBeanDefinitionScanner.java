@@ -1,11 +1,11 @@
 package com.blue_core.context.annotation;
 
 import cn.hutool.core.util.StrUtil;
-import com.blue_core.beans.annotation.Component;
 import com.blue_core.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import com.blue_core.beans.factory.config.BeanDefinition;
 import com.blue_core.beans.factory.config.GenericBeanDefinition;
 import com.blue_core.beans.factory.support.BeanDefinitionRegistry;
+import com.blue_core.stereotype.Component;
 
 import java.util.Set;
 

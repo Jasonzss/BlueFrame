@@ -1,10 +1,10 @@
 package com.blue_core.test;
 
-import com.blue_core.beans.annotation.Component;
 import com.blue_core.beans.factory.DisposableBean;
 import com.blue_core.beans.factory.InitializingBean;
 import com.blue_core.beans.factory.annotation.Autowired;
 import com.blue_core.beans.factory.annotation.Value;
+import com.blue_core.stereotype.Component;
 
 /**
  * @Author Jason

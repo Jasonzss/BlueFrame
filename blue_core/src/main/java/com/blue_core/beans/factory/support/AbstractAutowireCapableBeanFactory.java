@@ -292,4 +292,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         return result;
     }
+
+    @Override
+    public <T> T createBean(Class<T> beanClass) throws BeansException {
+        // Use prototype bean definition, to avoid registering bean as dependent bean.
+        BeanDefinition bd = new GenericBeanDefinition(beanClass);
+        bd.setScope(SCOPE_PROTOTYPE);
+        bd.setBeanName(beanClass.getSimpleName());
+        return (T) createBean(beanClass.getName(), bd, null);
+    }
 }

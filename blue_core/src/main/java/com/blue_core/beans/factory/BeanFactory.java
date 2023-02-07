@@ -8,6 +8,7 @@ import com.blue_core.beans.BeansException;
  * @Description ：IoC容器的顶级抽象
  * TODO 目前项目中存在很大的空指针异常的风险，后面有空再使用Optional来修复
  * TODO 异常处理还未细化，基本拿BeansException一笔带过，回头要处理一下
+ * TODO 测试用例过于耦合、冗余，为了方便以后升级维护，这些测试应该要重新写过！并且测试地并不全面，很多地方存在隐藏的bug
  */
 public interface BeanFactory {
     /**

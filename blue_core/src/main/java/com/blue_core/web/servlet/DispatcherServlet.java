@@ -1,13 +1,27 @@
 package com.blue_core.web.servlet;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.blue_core.beans.BeansException;
+import com.blue_core.context.ApplicationContext;
 import com.blue_core.core.io.ResourceLoader;
+import com.blue_core.utils.ClassUtil;
+import com.blue_core.web.context.ConfigurableWebApplicationContext;
+import com.blue_core.web.servlet.handler.SimpleHandlerMapping;
+import com.blue_core.web.servlet.mvc.method.annotation.SimpleRequestMappingHandlerAdapter;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Author Jason
@@ -18,11 +32,9 @@ import java.util.List;
  * 执行业务时：
  */
 public class DispatcherServlet extends FrameworkServlet{
-    private static final String DEFAULT_CONTEXT_CONFIG_NAME = "contextConfigLocation";
-    private static final String DEFAULT_CONTEXT_CONFIG_LOCATION = ResourceLoader.CLASSPATH_URL_PREFIX+"applicationContext.xml";
+    public static final String WEB_APPLICATION_CONTEXT_ATTRIBUTE = DispatcherServlet.class.getName() + ".CONTEXT";
 
-    //Spring配置的位置
-    private String contextConfigLocation;
+    private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 
     // 处理器映射：映射的是请求与处理方法，因为可能存在多种映射规则，所以这个属性是List类型的
     private List<HandlerMapping> handlerMappings;
@@ -30,8 +42,71 @@ public class DispatcherServlet extends FrameworkServlet{
     //处理器适配器：用于统一各类处理器接口，以方便DispatcherServlet使用
     private List<HandlerAdapter> handlerAdapters;
 
-    public final List<HandlerMapping> getHandlerMappings() {
-        return (this.handlerMappings != null ? Collections.unmodifiableList(this.handlerMappings) : null);
+    /*-----------------------------初始化--------------------------------*/
+
+    /**
+     * 刷新DispatcherServlet，第一次执行的话相当于是 初始化
+     */
+    @Override
+    protected void onRefresh(ConfigurableWebApplicationContext webApplicationContext) {
+        initHandlerMappings(webApplicationContext);
+        initHandlerAdapters(webApplicationContext);
+    }
+
+    //TODO 暂时先这样初始化这些组件，可能写死了不太好
+
+    private void initHandlerAdapters(ConfigurableWebApplicationContext webApplicationContext) {
+        this.handlerAdapters = null;
+
+
+        Map<String, HandlerAdapter> beansOfType = webApplicationContext.getBeansOfType(HandlerAdapter.class);
+        this.handlerAdapters = new ArrayList<>(beansOfType.size());
+        beansOfType.forEach((k,v) -> {
+            this.handlerAdapters.add(v);
+        });
+
+        if (CollectionUtil.isEmpty(this.handlerAdapters)){
+            this.handlerAdapters = getDefaultHandlerAdapters();
+        }
+    }
+
+    private List<HandlerAdapter> getDefaultHandlerAdapters() {
+        ArrayList<Class<? extends HandlerAdapter>> classes = Lists.newArrayList(SimpleRequestMappingHandlerAdapter.class);
+        List<HandlerAdapter> adapters = new ArrayList<>();
+
+        classes.forEach((c) -> {
+            HandlerAdapter bean = getWebApplicationContext().getAutowireCapableBeanFactory().createBean(c);
+            adapters.add(bean);
+        });
+
+        return adapters;
+    }
+
+    private void initHandlerMappings(ConfigurableWebApplicationContext webApplicationContext) {
+        this.handlerMappings = null;
+
+
+        Map<String, HandlerMapping> beansOfType = webApplicationContext.getBeansOfType(HandlerMapping.class);
+        this.handlerMappings = new ArrayList<>(beansOfType.size());
+        beansOfType.forEach((k,v) -> {
+            this.handlerMappings.add(v);
+        });
+
+        if (CollectionUtil.isEmpty(handlerMappings)){
+            this.handlerMappings = getDefaultHandlerMappings();
+        }
+    }
+
+    private List<HandlerMapping> getDefaultHandlerMappings() {
+        ArrayList<Class<? extends HandlerMapping>> classes = Lists.newArrayList(SimpleHandlerMapping.class);
+        List<HandlerMapping> handlerMappings = new ArrayList<>();
+
+        classes.forEach((c) -> {
+            HandlerMapping bean = getWebApplicationContext().getAutowireCapableBeanFactory().createBean(c);
+            handlerMappings.add(bean);
+        });
+
+        return handlerMappings;
     }
 
     /*-----------------------------业务处理核心流程--------------------------------*/
@@ -40,12 +115,12 @@ public class DispatcherServlet extends FrameworkServlet{
      * 执行业务
      */
     @Override
-    protected void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //TODO 保留request的参数快照，在request处理完成后把参数恢复。不知道为什么这样。
-
-        //TODO 设置框架对象以用于 处理器（Handler）和 视图对象（View）
+    protected void doService(HttpServletRequest request, HttpServletResponse response) {
+        // Make framework objects available to handlers and view objects.
+        request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
 
         //执行请求分发
+        logger.info("DispatcherServlet#hashCode："+this.hashCode());
         doDispatch(request, response);
     }
 
@@ -55,7 +130,8 @@ public class DispatcherServlet extends FrameworkServlet{
      * @param response 响应
      */
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) {
-        //TODO 检查是否上传文件的请求，是的话将request包装成上传文件request，上传任务结束后还要关闭对应的资源
+        //TODO 检查是否上传文件的请求，是的话将request包装成 特殊的request，上传任务结束后还要关闭对应的资源
+
         Object result = null;
         HandlerExecutionChain mappedHandler = null;
         try{

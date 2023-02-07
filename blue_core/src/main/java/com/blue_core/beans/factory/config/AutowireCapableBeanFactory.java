@@ -22,4 +22,6 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
      * @param beanName 该bean的name
      */
     Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException;
+
+    <T> T createBean(Class<T> beanClass);
 }

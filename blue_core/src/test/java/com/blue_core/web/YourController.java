@@ -1,4 +1,4 @@
-package com.mvc_test.web;
+package com.blue_core.web;
 
 import com.blue_core.stereotype.Component;
 import com.blue_core.web.bind.annotation.RequestMapping;
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * @CreationDate 2023/02/06 - 18:48
  * @Description ：
  */
+
 @Component
 @RequestMapping
 public class YourController {

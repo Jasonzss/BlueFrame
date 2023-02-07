@@ -6,9 +6,13 @@ import com.blue_core.beans.factory.xml.XmlBeanDefinitionReader;
 /**
  * @Author Jason
  * @CreationDate 2023/01/28 - 22:05
- * @Description ：
+ * @Description ：继承自AbstractRefreshableConfigApplicationContext类
+ * 实现了父类的模板抽象方法loadBeanDefinitions，用于实现如何导入BeanDefinition
+ * 此类便是导入xml中的BeanDefinitions，具体解析xml的逻辑在XMLBeanDefinitionReader中实现
+ *
+ * 读取xml -> 解析xml -> 加载BeanDefinitions进BeanFactory
  */
-public abstract class AbstractXmlApplicationContext extends AbstractRefreshableApplicationContext{
+public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigApplicationContext{
 
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {

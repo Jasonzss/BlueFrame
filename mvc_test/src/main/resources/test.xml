@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans id="nameBeans">
+    <bean id="xmlTest2" class="com.blue_core.test.TestEntity2" scope="prototype">
+    </bean>
+
+    <bean id="Test1_1" class="com.blue_core.test.test01.Test1_1">
+        <property name="testStr" value="${name}"/>
+    </bean>
+
+    <component-scan base-package="com.blue_core.test"/>
+    <component-scan base-package="com.mvc_test.web"/>
+</beans>

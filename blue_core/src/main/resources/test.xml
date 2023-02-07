@@ -17,6 +17,7 @@
     </bean>
 
     <component-scan base-package="com.blue_core.test"/>
+    <component-scan base-package="com.blue_core.web"/>
 
     <bean id="MyBeanPostProcessor" class="com.blue_core.beans.factory.config.MyBeanPostProcessor"/>
 <!--    <bean id="MyBeanFactoryPostProcessor" class="com.blue_core.beans.factory.config.MyBeanFactoryPostProcessor"/>-->

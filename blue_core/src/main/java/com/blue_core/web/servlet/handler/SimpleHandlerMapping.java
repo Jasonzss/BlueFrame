@@ -1,5 +1,9 @@
 package com.blue_core.web.servlet.handler;
 
+import com.blue_core.beans.BeansException;
+import com.blue_core.beans.factory.InitializingBean;
+import com.blue_core.context.ApplicationContext;
+import com.blue_core.context.ApplicationContextAware;
 import com.blue_core.web.bind.annotation.RequestMapping;
 import com.blue_core.web.servlet.HandlerExecutionChain;
 import com.blue_core.web.servlet.HandlerInterceptor;
@@ -16,11 +20,12 @@ import java.util.*;
  * @Description ：请求 与 请求处理器 映射关系的简单实现
  * TODO 目前仅支持一种固定的映射方式即：http://localhost:8080/mvc_test/my/t02 -> /my/t02。后续其他映射方式待添加
  */
-public class SimpleHandlerMapping implements HandlerMapping {
+public class SimpleHandlerMapping implements HandlerMapping, InitializingBean, ApplicationContextAware {
 
     private List<HandlerInterceptor> interceptors = new ArrayList<>();
 
     private Map<String,Object> handlers = new HashMap<>();
+    private ApplicationContext applicationContext;
 
     @Override
     public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
@@ -88,5 +93,25 @@ public class SimpleHandlerMapping implements HandlerMapping {
 
     public void addInterceptor(HandlerInterceptor interceptor){
         interceptors.add(interceptor);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initHandlerMethods();
+    }
+
+    protected void initHandlerMethods() {
+        String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
+        for (String name : beanDefinitionNames) {
+            Object bean = applicationContext.getBean(name);
+            if (bean.getClass().isAnnotationPresent(RequestMapping.class)) {
+                addHandler(bean);
+            }
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

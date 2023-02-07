@@ -1,4 +1,4 @@
-package com.mvc_test.web;
+package com.blue_core.web;
 
 import com.blue_core.stereotype.Component;
 import com.blue_core.web.servlet.HandlerInterceptor;

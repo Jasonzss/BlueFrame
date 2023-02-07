@@ -6,9 +6,17 @@
          version="4.0">
 
   <!--×¢²áDispatcherServlet-->
+<!--  <servlet>-->
+<!--    <servlet-name>springmvc</servlet-name>-->
+<!--    <servlet-class>com.mvc_test.web.MyDispatcherServlet</servlet-class>-->
+<!--  </servlet>-->
   <servlet>
     <servlet-name>springmvc</servlet-name>
-    <servlet-class>com.mvc_test.web.MyDispatcherServlet</servlet-class>
+    <servlet-class>com.blue_core.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>configLocation</param-name>
+      <param-value>classpath:test.xml</param-value>
+    </init-param>
   </servlet>
 
   <servlet-mapping>

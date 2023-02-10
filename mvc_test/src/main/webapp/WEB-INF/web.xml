@@ -15,7 +15,7 @@
     <servlet-class>com.blue_core.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>configLocation</param-name>
-      <param-value>classpath:test.xml</param-value>
+      <param-value>classpath:ttt.xml</param-value>
     </init-param>
   </servlet>
 

@@ -1,27 +1,23 @@
 package com.blue_core.web.servlet;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
 import com.blue_core.beans.BeansException;
-import com.blue_core.context.ApplicationContext;
-import com.blue_core.core.io.ResourceLoader;
-import com.blue_core.utils.ClassUtil;
 import com.blue_core.web.context.ConfigurableWebApplicationContext;
 import com.blue_core.web.servlet.handler.SimpleHandlerMapping;
 import com.blue_core.web.servlet.mvc.method.annotation.SimpleRequestMappingHandlerAdapter;
+import com.blue_core.web.servlet.result_handler.DefaultResultHandler;
+import com.blue_core.web.servlet.result_handler.ExcelResultHandler;
+import com.blue_core.web.servlet.result_handler.FileResultHandler;
+import com.blue_core.web.servlet.result_handler.RenderedImageResultHandler;
 import com.google.common.collect.Lists;
+import javafx.collections.transformation.SortedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * @Author Jason
@@ -42,6 +38,10 @@ public class DispatcherServlet extends FrameworkServlet{
     //处理器适配器：用于统一各类处理器接口，以方便DispatcherServlet使用
     private List<HandlerAdapter> handlerAdapters;
 
+    //视图解析器，负责对处理器返回的数据进行渲染
+//    private List<ViewResolver> viewResolvers;
+
+    private SortedSet<ResultHandler> resultHandlers;
     /*-----------------------------初始化--------------------------------*/
 
     /**
@@ -51,9 +51,11 @@ public class DispatcherServlet extends FrameworkServlet{
     protected void onRefresh(ConfigurableWebApplicationContext webApplicationContext) {
         initHandlerMappings(webApplicationContext);
         initHandlerAdapters(webApplicationContext);
+        initResultHandler(webApplicationContext);
     }
 
-    //TODO 暂时先这样初始化这些组件，可能写死了不太好
+
+    //TODO 暂时先这样初始化这些组件，可能写死了不太好，具体修改方案参考 SpringMVC 的 Dispatcher 方法的 getDefaultStrategies
 
     private void initHandlerAdapters(ConfigurableWebApplicationContext webApplicationContext) {
         this.handlerAdapters = null;
@@ -61,9 +63,7 @@ public class DispatcherServlet extends FrameworkServlet{
 
         Map<String, HandlerAdapter> beansOfType = webApplicationContext.getBeansOfType(HandlerAdapter.class);
         this.handlerAdapters = new ArrayList<>(beansOfType.size());
-        beansOfType.forEach((k,v) -> {
-            this.handlerAdapters.add(v);
-        });
+        beansOfType.forEach((k,v) -> this.handlerAdapters.add(v));
 
         if (CollectionUtil.isEmpty(this.handlerAdapters)){
             this.handlerAdapters = getDefaultHandlerAdapters();
@@ -71,7 +71,10 @@ public class DispatcherServlet extends FrameworkServlet{
     }
 
     private List<HandlerAdapter> getDefaultHandlerAdapters() {
-        ArrayList<Class<? extends HandlerAdapter>> classes = Lists.newArrayList(SimpleRequestMappingHandlerAdapter.class);
+        ArrayList<Class<? extends HandlerAdapter>> classes = Lists.newArrayList(
+                SimpleRequestMappingHandlerAdapter.class
+        );
+
         List<HandlerAdapter> adapters = new ArrayList<>();
 
         classes.forEach((c) -> {
@@ -88,9 +91,7 @@ public class DispatcherServlet extends FrameworkServlet{
 
         Map<String, HandlerMapping> beansOfType = webApplicationContext.getBeansOfType(HandlerMapping.class);
         this.handlerMappings = new ArrayList<>(beansOfType.size());
-        beansOfType.forEach((k,v) -> {
-            this.handlerMappings.add(v);
-        });
+        beansOfType.forEach((k,v) -> this.handlerMappings.add(v));
 
         if (CollectionUtil.isEmpty(handlerMappings)){
             this.handlerMappings = getDefaultHandlerMappings();
@@ -98,7 +99,10 @@ public class DispatcherServlet extends FrameworkServlet{
     }
 
     private List<HandlerMapping> getDefaultHandlerMappings() {
-        ArrayList<Class<? extends HandlerMapping>> classes = Lists.newArrayList(SimpleHandlerMapping.class);
+        ArrayList<Class<? extends HandlerMapping>> classes = Lists.newArrayList(
+                SimpleHandlerMapping.class
+        );
+
         List<HandlerMapping> handlerMappings = new ArrayList<>();
 
         classes.forEach((c) -> {
@@ -107,6 +111,37 @@ public class DispatcherServlet extends FrameworkServlet{
         });
 
         return handlerMappings;
+    }
+
+
+    private void initResultHandler(ConfigurableWebApplicationContext webApplicationContext) {
+        this.resultHandlers = null;
+
+        Map<String, ResultHandler> beansOfType = webApplicationContext.getBeansOfType(ResultHandler.class);
+        this.resultHandlers = new TreeSet<>();
+        beansOfType.forEach((k,v) -> this.resultHandlers.add(v));
+
+        if (CollectionUtil.isEmpty(resultHandlers)){
+            this.resultHandlers = getDefaultResultHandlers();
+        }
+    }
+
+    private SortedSet<ResultHandler> getDefaultResultHandlers() {
+        ArrayList<Class<? extends ResultHandler>> classes = Lists.newArrayList(
+                DefaultResultHandler.class,
+                ExcelResultHandler.class,
+                FileResultHandler.class,
+                RenderedImageResultHandler.class
+        );
+
+        SortedSet<ResultHandler> resultHandlers = new TreeSet<>();
+
+        classes.forEach((c) -> {
+            ResultHandler bean = getWebApplicationContext().getAutowireCapableBeanFactory().createBean(c);
+            resultHandlers.add(bean);
+        });
+
+        return resultHandlers;
     }
 
     /*-----------------------------业务处理核心流程--------------------------------*/
@@ -187,7 +222,7 @@ public class DispatcherServlet extends FrameworkServlet{
     /**
      * 找不到对应的处理器，执行对应的处理
      */
-    protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void noHandlerFound(HttpServletRequest request, HttpServletResponse response) {
         throw new BeansException("找不到【"+request.getMethod()+":"+request.getRequestURI()+"】对应的处理器");
     }
 
@@ -216,14 +251,16 @@ public class DispatcherServlet extends FrameworkServlet{
 
         //TODO 如果存在ModelAndView且内部数据正常，则进行数据渲染
 
-        //将数据输出回前端 TODO 先只搞一个返回String的
-        if (result instanceof String){
-            try {
-                response.getWriter().write((String) result);
-            } catch (IOException e) {
-                e.printStackTrace();
+        //将数据输出回前端
+        ResultHandler resultHandler = new DefaultResultHandler();
+        for (ResultHandler r : resultHandlers) {
+            if (r.support(result)){
+                resultHandler = r;
+                break;
             }
         }
+
+        resultHandler.handleResult(result,request,response);
 
 
         //TODO 数据处理完毕，触发Handler中的Interceptor的回调函数

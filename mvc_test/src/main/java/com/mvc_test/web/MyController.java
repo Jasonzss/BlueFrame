@@ -44,4 +44,12 @@ public class MyController {
         System.out.println(request.getRequestURI());
         return "world hello555555555555555555555555555555555555";
     }
+
+    @RequestMapping
+    public String t06(HttpServletResponse response, HttpServletRequest request){
+        //手动抛出异常
+//        int a = 1/0;
+//        return "aa";
+        throw new RuntimeException("fuck the exception");
+    }
 }

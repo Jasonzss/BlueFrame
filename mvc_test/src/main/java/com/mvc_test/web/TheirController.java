@@ -1,5 +1,6 @@
 package com.mvc_test.web;
 
+import cn.hutool.core.net.multipart.MultipartFormData;
 import com.blue_core.stereotype.Component;
 import com.blue_core.test.TestEntity1;
 import com.blue_core.web.bind.annotation.RequestMapping;
@@ -35,6 +36,11 @@ public class TheirController {
 
     @RequestMapping("/te4")
     public BufferedImage image(HttpServletResponse response, HttpServletRequest request){
+        return ImageUtilDemo.createAuthImage("hello world");
+    }
+
+    @RequestMapping("/te5")
+    public BufferedImage uploadFile(){
         return ImageUtilDemo.createAuthImage("hello world");
     }
 }

@@ -1,4 +1,4 @@
-# BlueFrame
+# BlueSpring
 # 自研Spring
 # 参考仓库
 ## 【https://github.com/fuzhengwei/small-spring】

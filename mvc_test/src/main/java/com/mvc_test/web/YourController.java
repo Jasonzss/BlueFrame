@@ -1,10 +1,10 @@
 package com.mvc_test.web;
 
 import cn.hutool.core.net.multipart.UploadFile;
-import com.blue_core.stereotype.Component;
-import com.blue_core.web.bind.annotation.RequestMapping;
-import com.blue_core.web.servlet.result_handler.ForwardHandler;
-import com.blue_core.web.servlet.result_handler.RedirectHandler;
+import com.blue_dot.stereotype.Component;
+import com.blue_dot.web.bind.annotation.RequestMapping;
+import com.blue_dot.web.servlet.result_handler.ForwardHandler;
+import com.blue_dot.web.servlet.result_handler.RedirectHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

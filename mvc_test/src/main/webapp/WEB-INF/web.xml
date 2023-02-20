@@ -12,7 +12,7 @@
 <!--  </servlet>-->
   <servlet>
     <servlet-name>springmvc</servlet-name>
-    <servlet-class>com.blue_core.web.servlet.DispatcherServlet</servlet-class>
+    <servlet-class>com.blue_dot.web.servlet.DispatcherServlet</servlet-class>
     <init-param>
       <param-name>configLocation</param-name>
       <param-value>classpath:ttt.xml</param-value>

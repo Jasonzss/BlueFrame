@@ -1,13 +1,12 @@
 package com.mvc_test.web;
 
-import com.blue_core.web.servlet.DispatcherServlet;
-import com.blue_core.web.servlet.handler.MappedInterceptor;
-import com.blue_core.web.servlet.handler.SimpleHandlerMapping;
-import com.blue_core.web.servlet.mvc.method.annotation.SimpleRequestMappingHandlerAdapter;
+import com.blue_dot.web.servlet.DispatcherServlet;
+import com.blue_dot.web.servlet.handler.MappedInterceptor;
+import com.blue_dot.web.servlet.handler.SimpleHandlerMapping;
+import com.blue_dot.web.servlet.mvc.method.annotation.SimpleRequestMappingHandlerAdapter;
 import com.google.common.collect.Lists;
 
 import javax.servlet.ServletException;
-import java.util.ArrayList;
 
 /**
  * @Author Jason

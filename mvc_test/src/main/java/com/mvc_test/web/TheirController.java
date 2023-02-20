@@ -1,9 +1,8 @@
 package com.mvc_test.web;
 
-import cn.hutool.core.net.multipart.MultipartFormData;
-import com.blue_core.stereotype.Component;
-import com.blue_core.test.TestEntity1;
-import com.blue_core.web.bind.annotation.RequestMapping;
+import com.blue_dot.stereotype.Component;
+import com.blue_dot.test.TestEntity1;
+import com.blue_dot.web.bind.annotation.RequestMapping;
 import org.apache.poi.hssf.usermodel.*;
 
 import javax.servlet.http.HttpServletRequest;

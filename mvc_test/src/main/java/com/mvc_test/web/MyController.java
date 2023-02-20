@@ -1,7 +1,7 @@
 package com.mvc_test.web;
 
-import com.blue_core.stereotype.Component;
-import com.blue_core.web.bind.annotation.RequestMapping;
+import com.blue_dot.stereotype.Component;
+import com.blue_dot.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
